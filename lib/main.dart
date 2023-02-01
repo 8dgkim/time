@@ -12,12 +12,93 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'Date and Time',
-      home: TimeDisplay(),
+      title: 'Spacetime',
+      home: Home(),
     );
   }
 }
 
+// Home class that collects all the other subclasses
+class Home extends StatefulWidget {
+  const Home({super.key});
+
+  @override
+  State<Home> createState() => HomeState();
+}
+
+class HomeState extends State<Home> {
+  int _selectedIndex = 0;
+
+  static const TextStyle optionStyle =
+    TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      fontFamily: 'Times New Roman',
+      color: Colors.white,
+    );
+
+  static final List<Widget> _widgetOptions = <Widget>[  
+    Container (
+      color: Colors.black,
+      alignment: Alignment.center,
+      child: const TimeDisplay(),
+    ),
+    Container(
+      color: Colors.black87,
+      alignment: Alignment.center,
+      child: const Text('Future', style: optionStyle),
+    ),
+    Container(
+      color: Colors.black87,
+      alignment: Alignment.center,
+      child: const Text('Priority', style: optionStyle),
+    ),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // appBar: AppBar(
+      //   title: const Text('Everything is possible', style: optionStyle, textAlign: TextAlign.center),
+      //   backgroundColor: Colors.black,
+      // ),
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.circle_outlined, color: Colors.white),
+            label: 'Spacetime',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.explore, color: Colors.white),
+            label: 'Future',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list, color: Colors.white),
+            label: '',
+          ),
+        ],
+        backgroundColor: Colors.black,
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.transparent,
+        selectedLabelStyle: const TextStyle(color: Colors.white),
+        unselectedLabelStyle: const TextStyle(color: Colors.white),
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+
+// Displays date and time using the user's location
 class TimeDisplay extends StatefulWidget {
   const TimeDisplay({super.key});
 
@@ -62,6 +143,8 @@ class _TimeDisplayState extends State<TimeDisplay> {
                   fontSize: 28,
                   color: Colors.white,
                   decoration: TextDecoration.none,
+                  fontFamily: 'Times New Roman',
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 15),
@@ -71,6 +154,8 @@ class _TimeDisplayState extends State<TimeDisplay> {
                   fontSize: 40,
                   color: Colors.white,
                   decoration: TextDecoration.none,
+                  fontFamily: 'Times New Roman',
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
@@ -80,3 +165,5 @@ class _TimeDisplayState extends State<TimeDisplay> {
     );
   }
 }
+
+
