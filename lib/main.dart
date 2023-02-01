@@ -18,170 +18,87 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Home class that collects all the other subclasses
 class Home extends StatefulWidget {
   const Home({super.key});
 
   @override
-  HomeState createState() => HomeState();
+  State<Home> createState() => HomeState();
 }
 
-// class HomeState extends State<Home> {
-//   bool _areButtonsVisible = false;
-
-//   void _toggleButtonsVisibility() {
-//     setState(() {
-//       _areButtonsVisible = !_areButtonsVisible;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.black,
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             const SizedBox(height: 250),
-//             const TimeDisplay(),
-//             const SizedBox(height: 250),
-//             // NavigatorCircleButton(),
-//             Stack(
-//               children: <Widget>[
-//                 NavigatorCircleButton(
-//                   onPressed: _toggleButtonsVisibility,
-//                 ),
-//                 if (_areButtonsVisible) ...[
-//                   // Add the four buttons that appear when the main button is pressed here
-//                   TaskButtons(onPressed: _toggleButtonsVisibility)
-//                 ],
-//               ],
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class HomeState extends State<Home> {
-  bool _areButtonsVisible = false;
+  int _selectedIndex = 0;
 
-  void _toggleButtonsVisibility() {
+  static const TextStyle optionStyle =
+    TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      fontFamily: 'Times New Roman',
+      color: Colors.white,
+    );
+
+  static final List<Widget> _widgetOptions = <Widget>[  
+    Container (
+      color: Colors.black,
+      alignment: Alignment.center,
+      child: const TimeDisplay(),
+    ),
+    Container(
+      color: Colors.black87,
+      alignment: Alignment.center,
+      child: const Text('Future', style: optionStyle),
+    ),
+    Container(
+      color: Colors.black87,
+      alignment: Alignment.center,
+      child: const Text('Priority', style: optionStyle),
+    ),
+  ];
+
+  void _onItemTapped(int index) {
     setState(() {
-      _areButtonsVisible = !_areButtonsVisible;
+      _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      // appBar: AppBar(
+      //   title: const Text('Everything is possible', style: optionStyle, textAlign: TextAlign.center),
+      //   backgroundColor: Colors.black,
+      // ),
       body: Center(
-        child: Flex(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          direction: Axis.vertical,
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const <Widget>[
-                  SizedBox(height: 250),
-                  TimeDisplay(),
-                  SizedBox(height: 250),
-                ],
-              ),
-            ),
-              Stack(
-                // overflow: Overflow.visible,
-                children: <Widget>[
-                  NavigatorCircleButton(
-                    onPressed: _toggleButtonsVisibility,
-                  ),
-                  if (_areButtonsVisible) ...[
-                    Stack(
-                      children: <Widget>[
-                        Positioned(
-                          top: -100,
-                          left: -100,
-                          child: TaskButtons(onPressed: _toggleButtonsVisibility),
-                        ),
-                        Positioned(
-                          top: -100,
-                          right: -100,
-                          child: TaskButtons(onPressed: _toggleButtonsVisibility),
-                        ),
-                        Positioned(
-                          bottom: -100,
-                          left: -100,
-                          child: TaskButtons(onPressed: _toggleButtonsVisibility),
-                        ),
-                        Positioned(
-                          bottom: -100,
-                          right: -100,
-                          child: TaskButtons(onPressed: _toggleButtonsVisibility),
-                        ),
-                      ],
-                    )
-                  ],
-                ],
-              ),
-          ],
-        ),
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.circle_outlined, color: Colors.white),
+            label: 'Spacetime',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.explore, color: Colors.white),
+            label: 'Future',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list, color: Colors.white),
+            label: '',
+          ),
+        ],
+        backgroundColor: Colors.black,
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.transparent,
+        selectedLabelStyle: const TextStyle(color: Colors.white),
+        unselectedLabelStyle: const TextStyle(color: Colors.white),
+        onTap: _onItemTapped,
       ),
     );
   }
 }
 
-// class HomeState extends State<Home> {
-//   bool _areButtonsVisible = false;
 
-//   void _toggleButtonsVisibility() {
-//     setState(() {
-//       _areButtonsVisible = !_areButtonsVisible;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.black,
-//       body: Center(
-//         child: Flex(
-//           direction: Axis.vertical,
-//           children: <Widget>[
-//             Expanded(
-//               child: Column(
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: const <Widget>[
-//                   SizedBox(height: 250),
-//                   TimeDisplay(),
-//                   SizedBox(height: 250),
-//                 ],
-//               ),
-//             ),
-//             Expanded(
-//               child: Stack(
-//                 children: <Widget>[
-//                   NavigatorCircleButton(
-//                     onPressed: _toggleButtonsVisibility,
-//                   ),
-//                   if (_areButtonsVisible) ...[
-//                     TaskButtons(onPressed: _toggleButtonsVisibility)
-//                   ],
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
-
-
+// Displays date and time using the user's location
 class TimeDisplay extends StatefulWidget {
   const TimeDisplay({super.key});
 
@@ -250,187 +167,3 @@ class _TimeDisplayState extends State<TimeDisplay> {
 }
 
 
-
-
-class NavigatorCircleButton extends StatefulWidget {
-  const NavigatorCircleButton({super.key, required void Function() onPressed});
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _NavigatorCircleButtonState createState() => _NavigatorCircleButtonState();
-}
-
-class _NavigatorCircleButtonState extends State<NavigatorCircleButton> {
-  bool _isExpanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        LimitedBox(
-          maxWidth: 56,
-          maxHeight: 56,
-          child: AnimatedPositioned(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeIn,
-            bottom: _isExpanded ? 60 : 0,
-            right: _isExpanded ? 60 : 0,
-            child: FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  _isExpanded = !_isExpanded;
-                });
-              },
-              backgroundColor: Colors.white,
-              child: const Icon(
-                Icons.circle,
-                color: Colors.black,
-                size: 50
-              ),
-            ),
-          ),
-        ),
-        // LimitedBox(
-        //   maxWidth: 56,
-        //   maxHeight: 56,
-        //   child: AnimatedPositioned(
-        //     duration: const Duration(milliseconds: 200),
-        //     curve: Curves.easeIn,
-        //     bottom: _isExpanded ? 0 : 60,
-        //     right: _isExpanded ? 0 : 60,
-        //     child: FloatingActionButton(
-        //       onPressed: () {},
-        //       backgroundColor: Colors.transparent,
-        //       child: Container(),
-        //     ),
-        //   ),
-        // ),
-        // LimitedBox(
-        //   maxWidth: 56,
-        //   maxHeight: 56,
-        //   child: AnimatedPositioned(
-        //     duration: const Duration(milliseconds: 200),
-        //     curve: Curves.easeIn,
-        //     bottom: _isExpanded ? 0 : 60,
-        //     right: _isExpanded ? 0 : 60,
-        //     child: FloatingActionButton(
-        //       onPressed: () {},
-        //       backgroundColor: Colors.transparent,
-        //       child: Container(),
-        //     ),
-        //   ),
-        // ),
-        // LimitedBox(
-        //   maxWidth: 56,
-        //   maxHeight: 56,
-        //   child: AnimatedPositioned(
-        //     duration: const Duration(milliseconds: 200),
-        //     curve: Curves.easeIn,
-        //     bottom: _isExpanded ? 0 : 60,
-        //     right: _isExpanded ? 0 : 60,
-        //     child: FloatingActionButton(
-        //       onPressed: () {},
-        //       backgroundColor: Colors.transparent,
-        //       child: Container(),
-        //     ),
-        //   ),
-        // ),
-        // LimitedBox(
-        //   maxWidth: 56,
-        //   maxHeight: 56,
-        //   child: AnimatedPositioned(
-        //     duration: const Duration(milliseconds: 200),
-        //     curve: Curves.easeIn,
-        //     bottom: _isExpanded ? 0 : 60,
-        //     right: _isExpanded ? 0 : 60,
-        //     child: FloatingActionButton(
-        //       onPressed: () {},
-        //       backgroundColor: Colors.transparent,
-        //       child: Container(),
-        //     ),
-        //   ),
-        // ),
-      ]
-    );
-  }
-}
-
-class TaskButtons extends StatefulWidget {
-  const TaskButtons({super.key, required void Function() onPressed});
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _TaskButtonsState createState() => _TaskButtonsState();
-}
-
-class _TaskButtonsState extends State<TaskButtons> {
-  final bool _isExpanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        LimitedBox(
-          maxWidth: 56,
-          maxHeight: 56,
-          child: AnimatedPositioned(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeIn,
-            bottom: _isExpanded ? 0 : 60,
-            right: _isExpanded ? 0 : 60,
-            child: FloatingActionButton(
-              onPressed: () {},
-              backgroundColor: Colors.transparent,
-              child: Container(),
-            ),
-          ),
-        ),
-        LimitedBox(
-          maxWidth: 56,
-          maxHeight: 56,
-          child: AnimatedPositioned(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeIn,
-            bottom: _isExpanded ? 0 : 60,
-            right: _isExpanded ? 0 : 60,
-            child: FloatingActionButton(
-              onPressed: () {},
-              backgroundColor: Colors.transparent,
-              child: Container(),
-            ),
-          ),
-        ),
-        LimitedBox(
-          maxWidth: 56,
-          maxHeight: 56,
-          child: AnimatedPositioned(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeIn,
-            bottom: _isExpanded ? 0 : 60,
-            right: _isExpanded ? 0 : 60,
-            child: FloatingActionButton(
-              onPressed: () {},
-              backgroundColor: Colors.transparent,
-              child: Container(),
-            ),
-          ),
-        ),
-        LimitedBox(
-          maxWidth: 56,
-          maxHeight: 56,
-          child: AnimatedPositioned(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeIn,
-            bottom: _isExpanded ? 0 : 60,
-            right: _isExpanded ? 0 : 60,
-            child: FloatingActionButton(
-              onPressed: () {},
-              backgroundColor: Colors.transparent,
-              child: Container(),
-            ),
-          ),
-        ),
-      ]
-    );
-  }
-}
