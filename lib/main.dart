@@ -27,7 +27,7 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   static const TextStyle optionStyle =
     TextStyle(
@@ -38,15 +38,15 @@ class HomeState extends State<Home> {
     );
 
   static final List<Widget> _widgetOptions = <Widget>[  
-    Container (
-      color: Colors.black,
-      alignment: Alignment.center,
-      child: const TimeDisplay(),
-    ),
     Container(
       color: Colors.black87,
       alignment: Alignment.center,
       child: const Text('Future', style: optionStyle),
+    ),
+    Container (
+      color: Colors.black,
+      alignment: Alignment.center,
+      child: const TimeDisplay(),
     ),
     Container(
       color: Colors.black87,
@@ -74,12 +74,12 @@ class HomeState extends State<Home> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.circle_outlined, color: Colors.white),
-            label: 'Spacetime',
+            icon: Icon(Icons.question_mark_sharp, color: Colors.white),
+            label: 'Future',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.explore, color: Colors.white),
-            label: 'Future',
+            icon: Icon(Icons.circle_outlined, color: Colors.white),
+            label: 'Spacetime',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list, color: Colors.white),
@@ -91,6 +91,8 @@ class HomeState extends State<Home> {
         selectedItemColor: Colors.transparent,
         selectedLabelStyle: const TextStyle(color: Colors.white),
         unselectedLabelStyle: const TextStyle(color: Colors.white),
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
         onTap: _onItemTapped,
       ),
     );
