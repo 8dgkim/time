@@ -41,7 +41,7 @@ class HomeState extends State<Home> {
     Container(
       color: Colors.black87,
       alignment: Alignment.center,
-      child: const Text('Future', style: optionStyle),
+      child: const Text('Priority', style: optionStyle),
     ),
     Container (
       color: Colors.black,
@@ -51,7 +51,7 @@ class HomeState extends State<Home> {
     Container(
       color: Colors.black87,
       alignment: Alignment.center,
-      child: const Text('Priority', style: optionStyle),
+      child: const Text('Future', style: optionStyle),
     ),
   ];
 
@@ -75,15 +75,15 @@ class HomeState extends State<Home> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.question_mark_sharp, color: Colors.white),
-            label: 'Future',
+            label: 'Priority',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.circle_outlined, color: Colors.white),
-            label: 'Spacetime',
+            label: 'SpaceTime',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list, color: Colors.white),
-            label: '',
+            label: 'Future',
           ),
         ],
         backgroundColor: Colors.black,
