@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
+// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,20 +29,12 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   int _selectedIndex = 1;
-
-  static const TextStyle optionStyle =
-    TextStyle(
-      fontSize: 34,
-      fontWeight: FontWeight.bold,
-      fontFamily: 'Times New Roman',
-      color: Colors.white,
-    );
-   
+ 
   static final List<Widget> _widgetOptions = <Widget>[  
     Container(
       color: Colors.black87,
       alignment: Alignment.center,
-      child: const Text('Priority', style: optionStyle),
+      child: const Text('Priority', style: defaultStyle),
     ),
     Container (
       color: Colors.black,
@@ -51,11 +44,10 @@ class HomeState extends State<Home> {
     Container(
       color: Colors.black87,
       alignment: Alignment.center,
-      // child: const Text('Future', style: optionStyle),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: const <Widget>[
-          Text('T-Time Counter', style: optionStyle,),
+          Text('T-Time Counter', style: defaultStyle),
           SizedBox(height: 100),
           TTime(),
         ],
@@ -72,10 +64,6 @@ class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Everything is possible', style: optionStyle, textAlign: TextAlign.center),
-      //   backgroundColor: Colors.black,
-      // ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
@@ -108,9 +96,7 @@ class HomeState extends State<Home> {
 }
 
 
-
-
-
+  
 /// SpaceTime (Center BarItem index = 1)
 /// 
 /// Displays date and time using the user's location.
@@ -126,23 +112,6 @@ class TimeDisplay extends StatefulWidget {
 class _TimeDisplayState extends State<TimeDisplay> {
   late Timer _timer;
   final StreamController<DateTime> _timeController = StreamController<DateTime>();
-
-  static const TextStyle optionStyle28 =
-    TextStyle(
-      fontSize: 28,
-      color: Colors.white,
-      decoration: TextDecoration.none,
-      fontFamily: 'Times New Roman',
-      fontWeight: FontWeight.bold,
-    );
-  static const TextStyle optionStyle40 =
-    TextStyle(
-      fontSize: 40,
-      color: Colors.white,
-      decoration: TextDecoration.none,
-      fontFamily: 'Times New Roman',
-      fontWeight: FontWeight.bold,
-    );
 
   @override
   void initState() {
@@ -172,12 +141,12 @@ class _TimeDisplayState extends State<TimeDisplay> {
             children: <Widget>[
               Text(
                 DateFormat("yyyy:MM:dd").format(snapshot.data!),
-                style: optionStyle28,
+                style: defaultStyle.copyWith(fontSize: 28),
               ),
               const SizedBox(height: 15),
               Text(
                 "${snapshot.data?.hour.toString().padLeft(2, '0')}:${snapshot.data?.minute.toString().padLeft(2, '0')}:${snapshot.data?.second.toString().padLeft(2, '0')}:${snapshot.data?.millisecond.toString().padLeft(3, '0')}",
-                style: optionStyle40
+                style: defaultStyle.copyWith(fontSize: 40),
               ),
             ],
           ),
@@ -200,119 +169,106 @@ class TTime extends StatefulWidget {
   _TTimeState createState() => _TTimeState();
 }
 
-class _TTimeState extends State<TTime> {
-  final _targetController = TextEditingController();
-  late DateTime _targetDate = DateTime.now();
-  late Timer _timer;
+class _TTimeState extends State<TTime> with AutomaticKeepAliveClientMixin{
+  @override
+  bool get wantKeepAlive => true;
 
-  static const TextStyle optionStyle =
-    TextStyle(
-      fontSize: 28,
-      fontWeight: FontWeight.bold,
-      fontFamily: 'Times New Roman',
-      color: Colors.white,
-    );    
-  static const TextStyle optionStyleTextField =
-    TextStyle(
-      fontSize: 14,
-      color: Colors.white,
-      decoration: TextDecoration.none,
-      fontFamily: 'Times New Roman',
-      fontWeight: FontWeight.bold,
-    );
+  final _targetController = TextEditingController();
+  late DateTime targetDate = DateTime.now();
+  late Timer timer;
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {});
     });
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    timer.cancel();
     super.dispose();
   }
 
   void _updateTargetDate() {
     setState(() {
-      _targetDate = DateTime.parse(_targetController.text);
+      targetDate = DateTime.parse(_targetController.text);
+      // storage.write(key: "targetDate", value: targetDate.toString());
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    var difference = _targetDate.difference(DateTime.now());
-    /// ignore: todo
-    /// Make more display styles: days, weeks, months, years, % of lifetime, etc.
-    // final years = difference.inDays ~/ 365;
-    // final months = difference.inDays ~/ 30;
-    // final days = difference.inDays - (months * 30);
-    final days = difference.inDays;
-    final hours = difference.inHours - (difference.inDays * 24);
-    final minutes = difference.inMinutes - (difference.inHours * 60);
-    final seconds = difference.inSeconds - (difference.inMinutes * 60);
+    Widget build(BuildContext context) {
+      super.build(context);
 
-    if (difference.isNegative) {
-      const Text("None", style: optionStyle);
-    }
+      late var difference = targetDate.difference(DateTime.now());
+      final days = difference.inDays;
+      final hours = difference.inHours - (difference.inDays * 24);
+      final minutes = difference.inMinutes - (difference.inHours * 60);
+      final seconds = difference.inSeconds - (difference.inMinutes * 60);
+      /// ignore: todo
+      /// Make more display styles: days, weeks, months, years, % of lifetime, etc.
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        TextField(
-          controller: _targetController,
-          onSubmitted: (_) => _updateTargetDate(),
-          decoration: const InputDecoration(
-            hintText: 'Enter target coordinate...',
-            hintStyle: optionStyleTextField,
-          ),
-          style: optionStyle,
-          textAlign: TextAlign.center,
-          cursorColor: Colors.white,
-          // focusNode: AlwaysDisabledFocusNode(), // disable focus
-        ),
-
-        const SizedBox(height: 30),
-        
-        Column(
-          children: [
-            if (difference.isNegative) ... [
-              const Text("", style: optionStyle)
-            ] else ... [
-              Text(
-                // "${years.toString().padLeft(4, '0')}:${months.toString().padLeft(2, '0')}:${days.toString().padLeft(2, '0')}::${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
-                "${days.toString().padLeft(2, '0')} :: ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
-                style: optionStyle,
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          TextField(
+            controller: _targetController,
+            onSubmitted: (_) => _updateTargetDate(),
+            // keyboardType: TextInputType.datetime,
+            decoration: InputDecoration(
+              hintText: 'Enter target coordinate...',
+              hintStyle: defaultStyle.copyWith(fontSize: 14),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.white
+                ),
               ),
-            ]
-          ],
-        )
-      ],
-    );
-  }
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.white
+                ),
+              ),
+            ),
+            style: defaultStyle.copyWith(fontSize: 28),
+            textAlign: TextAlign.center,
+            cursorColor: Colors.white,
+          ),
+
+          const SizedBox(height: 30),
+          
+          Column(
+            children: [
+              if (difference.isNegative) ... [
+                Text("", style: defaultStyle.copyWith(fontSize: 28),
+                )
+              ] else ... [
+                Text(
+                  // "${years.toString().padLeft(4, '0')}:${months.toString().padLeft(2, '0')}:${days.toString().padLeft(2, '0')}::${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
+                  "${days.toString().padLeft(2, '0')} :: ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
+                  style: defaultStyle.copyWith(fontSize: 28),
+                ),
+              ]
+            ],
+          )
+        ],
+      );
+    }
 }
 
-/// ignore: todo
-/// Figure out how to change the highlight color from current(blue) to new(white).
-// class AlwaysDisabledFocusNode extends FocusNode {
-//   @override
-//   bool get hasFocus => ;
-// }
-
-
-
-
-/// ignore: todo
-/// Organize all the TextStyle & optionStyle that specifies
-/// color theme, font family, font size, font weight.
-/// Most of them share the same settings.
-/// 
-const TextStyle optionStyle30 =
+/// Default textstyle setting
+/// Use copyWith() method to make specific changes
+/// Remove const to use copyWith()
+const TextStyle defaultStyle =
   TextStyle(
-    fontSize: 30,
+    fontSize: 34,
     fontWeight: FontWeight.bold,
     fontFamily: 'Times New Roman',
     color: Colors.white,
   );
+
+
+// const storage = FlutterSecureStorage();
+
+
