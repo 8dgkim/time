@@ -32,9 +32,19 @@ class HomeState extends State<Home> {
  
   static final List<Widget> _widgetOptions = <Widget>[  
     Container(
-      color: Colors.black87,
+      color: Colors.black,
       alignment: Alignment.center,
-      child: const Text('Priority', style: defaultStyle),
+      // child: const Text('Priority', style: defaultStyle),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Text('Priorities', style: defaultStyle),
+          const SizedBox(height: 100),
+          Text('1. Business Analysis', style: defaultStyle.copyWith(fontSize: 24),),
+          Text('2. Business Development', style: defaultStyle.copyWith(fontSize: 24),),
+          Text('3. Reading', style: defaultStyle.copyWith(fontSize: 24),),
+        ],
+      )
     ),
     Container (
       color: Colors.black,
@@ -96,7 +106,7 @@ class HomeState extends State<Home> {
 }
 
 
-  
+
 /// SpaceTime (Center BarItem index = 1)
 /// 
 /// Displays date and time using the user's location.
@@ -173,10 +183,10 @@ class _TTimeState extends State<TTime> with AutomaticKeepAliveClientMixin{
   @override
   bool get wantKeepAlive => true;
 
-  final _targetController = TextEditingController();
+  final targetController = TextEditingController();
   late DateTime targetDate = DateTime.now();
   late Timer timer;
-
+  
   @override
   void initState() {
     super.initState();
@@ -193,7 +203,7 @@ class _TTimeState extends State<TTime> with AutomaticKeepAliveClientMixin{
 
   void _updateTargetDate() {
     setState(() {
-      targetDate = DateTime.parse(_targetController.text);
+      targetDate = DateTime.parse(targetController.text);
       // storage.write(key: "targetDate", value: targetDate.toString());
     });
   }
@@ -214,9 +224,8 @@ class _TTimeState extends State<TTime> with AutomaticKeepAliveClientMixin{
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           TextField(
-            controller: _targetController,
+            controller: targetController,
             onSubmitted: (_) => _updateTargetDate(),
-            // keyboardType: TextInputType.datetime,
             decoration: InputDecoration(
               hintText: 'Enter target coordinate...',
               hintStyle: defaultStyle.copyWith(fontSize: 14),
@@ -236,7 +245,7 @@ class _TTimeState extends State<TTime> with AutomaticKeepAliveClientMixin{
             cursorColor: Colors.white,
           ),
 
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           
           Column(
             children: [
@@ -245,7 +254,6 @@ class _TTimeState extends State<TTime> with AutomaticKeepAliveClientMixin{
                 )
               ] else ... [
                 Text(
-                  // "${years.toString().padLeft(4, '0')}:${months.toString().padLeft(2, '0')}:${days.toString().padLeft(2, '0')}::${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
                   "${days.toString().padLeft(2, '0')} :: ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
                   style: defaultStyle.copyWith(fontSize: 28),
                 ),
