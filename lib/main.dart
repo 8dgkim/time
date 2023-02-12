@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 void main() {
@@ -12,9 +14,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  const MaterialApp(
       title: 'Spacetime',
       home: Home(),
+      // home: Column(
+      //     children: const <Widget>[
+      //       Home(),
+      //       Notify(),
+      //     ],
+      //   ),
     );
   }
 }
@@ -28,7 +36,7 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 2;
  
   static final List<Widget> _widgetOptions = <Widget>[  
     Container(
@@ -47,12 +55,23 @@ class HomeState extends State<Home> {
       )
     ),
     Container (
+      color: Colors.black87,
+      alignment: Alignment.center,
+      child: const Text("Timer", style: defaultStyle,),
+    ),
+    Container (
       color: Colors.black,
       alignment: Alignment.center,
-      child: const TimeDisplay(),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const <Widget>[
+          TimeDisplay(),
+          Notify()
+        ],
+      ),
     ),
     Container(
-      color: Colors.black87,
+      color: Colors.black,
       alignment: Alignment.center,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -62,6 +81,17 @@ class HomeState extends State<Home> {
           TTime(),
         ],
       )
+    ),
+    Container (
+      color: Colors.black87,
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const <Widget>[
+          Text("Settings", style: defaultStyle,),
+        ],
+      ),
+
     ),
   ];
 
@@ -84,6 +114,10 @@ class HomeState extends State<Home> {
             label: 'Priority',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.timelapse_sharp, color: Colors.white),
+            label: 'Timer',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.circle_outlined, color: Colors.white),
             label: 'SpaceTime',
           ),
@@ -91,8 +125,14 @@ class HomeState extends State<Home> {
             icon: Icon(Icons.question_mark_sharp, color: Colors.white),
             label: 'Future',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings, color: Colors.white),
+            label: 'Settings',
+          ),
         ],
         backgroundColor: Colors.black,
+        // fixedColor: Colors.white,
+        type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.transparent,
         selectedLabelStyle: const TextStyle(color: Colors.white),
@@ -265,6 +305,9 @@ class _TTimeState extends State<TTime> with AutomaticKeepAliveClientMixin{
     }
 }
 
+
+
+
 /// Default textstyle setting
 /// Use copyWith() method to make specific changes
 /// Remove const to use copyWith()
@@ -278,5 +321,176 @@ const TextStyle defaultStyle =
 
 
 // const storage = FlutterSecureStorage();
+
+
+
+
+/// todo: Send push notification after using the app for 15 minutes
+/// 
+/// Send push notification of current time when screen time exceeds 15 minutes.
+/// This code sets up a notification plugin and initializes it with `androidInitializationSettings` and `iosInitializationSettings`. 
+/// It also includes a method to show the notification with the current date and time using the `flutterLocalNotificationsPlugin.show` method.
+/// The `onDidReceiveLocalNotification` method is called when the app is in the foreground and the notification is received, 
+/// and the `onSelectNotification` method is called when the user taps on the notification and the app is brought to the foreground. 
+/// In the example code, these methods display an alert dialog and navigate to a new screen, respectively.
+/// 
+/// 
+/// 
+class Notify extends StatefulWidget {
+  const Notify({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _NotifyState createState() => _NotifyState();
+}
+
+class _NotifyState extends State<Notify> {
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  late AndroidInitializationSettings androidInitializationSettings;
+  // IOSInitializationSettings iosInitializationSettings;
+  late InitializationSettings initializationSettings;
+  late Timer timer;
+  
+
+
+  @override
+  void initState() {
+    super.initState();
+    initializing();
+    startTimer();
+  }
+
+  void initializing() async {
+    androidInitializationSettings = const AndroidInitializationSettings('app_icon');
+    // iosInitializationSettings = IOSInitializationSettings(
+        // onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+    initializationSettings = InitializationSettings(
+        android: androidInitializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,);
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(const Duration(minutes: 15), (timer) {
+      // _showNotification();
+      buildNotification();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox();
+  }
+
+  Future onDidReceiveLocalNotification(
+      int id, String title, String body, String payload) async {
+    return CupertinoAlertDialog(
+      title: Text(title),
+      content: Text(body),
+      actions: <Widget>[
+        CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () {
+              // ignore: avoid_print
+              print("Hi");
+            },
+            child: const Text("Okay")),
+      ],
+    );
+  }
+
+  Future onSelectNotification(String payload) async {
+    if (payload != null) {
+      print('notification payload: $payload');
+    }
+    await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Payload"),
+        content: Text("Payload : $payload"),
+      ),
+    );
+    // await Navigator.of(context).push(
+    //   MaterialPageRoute(builder: (context) => SecondScreen(payload)),
+    // );
+  }
+
+  Future<void> buildNotification() async {    
+    try {
+      var now = DateTime.now();
+      var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
+        'your channel id', 
+        'your channel name',
+        importance: Importance.max, 
+        priority: Priority.high, 
+        visibility: NotificationVisibility.public,
+      );
+      // var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+      var platformChannelSpecifics = NotificationDetails(
+          android: androidPlatformChannelSpecifics);
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        '${now.year.toString().padLeft(4, '0')}:${now.month.toString().padLeft(2, '0')}:${now.day.toString().padLeft(2, '0')}',
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}',
+        platformChannelSpecifics,
+        payload: ''
+      );
+    } catch (e) {
+      // ignore: avoid_print
+      print("Failed to show notification: $e");
+    }
+  }
+
+}
+
+
+
+
+
+
+/// todo: calculate other app usage time
+/// This is tricky...
+/// One way to implement this feature would be to use the WidgetsBindingObserver class in Flutter, 
+/// which can be used to monitor the lifecycle of an app. 
+/// By using the WidgetsBindingObserver, you can determine when an app goes into the background 
+/// and when it comes back to the foreground, and use this information to calculate the usage time of the app.
+/// This implementation uses a Map to store the usage time for each app, 
+/// with the key being the name of the app and the value being the usage time in seconds. 
+/// The didChangeAppLifecycleState method is called when the lifecycle of the app changes, 
+/// allowing us to start and stop a timer that tracks the usage time.
+
+// import 'package:flutter/widgets.dart';
+
+// class AppUsageTracker with WidgetsBindingObserver {
+//   AppUsageTracker() {
+//     WidgetsBinding.instance.addObserver(this);
+//   }
+
+//   Map<String, int> appUsage = {};
+//   Timer _timer;
+
+//   @override
+//   void didChangeAppLifecycleState(AppLifecycleState state) {
+//     switch (state) {
+//       case AppLifecycleState.paused:
+//         _timer?.cancel();
+//         break;
+//       case AppLifecycleState.resumed:
+//         _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+//           // Add 1 second to the app's usage time
+//           appUsage[currentAppName] = appUsage[currentAppName] + 1;
+//         });
+//         break;
+//       default:
+//         break;
+//     }
+//   }
+
+//   // Example of how to get the current app name
+//   String get currentAppName => 'example_app_name';
+// }
+
+
+
 
 
